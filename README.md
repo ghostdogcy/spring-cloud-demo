@@ -1,6 +1,6 @@
-#spring-cloud 学习demo
+# spring-cloud 学习demo
 
-##1.项目路径
+## 1.项目路径
 
 spring-cloud-server spring —— 服务注册中心
 |-spring-cloud-turbine —— 仪表盘监控服务中心
