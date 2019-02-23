@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>人脸识别登陆</title>
+
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="This is my page">
+    <link rel="stylesheet" type="text/css" th:href="@{/asserts/css/bootstrap.min.css}" href="plugin/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="plugin/css/font-awesome.min.css">-->
+
+    <style>
+
+        .hint{
+
+            color:red;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h3>人脸识别demo</h3></br>
+
+
+    <input type="text" id="uid" />
+
+    <video width="400" height="300"></video>
+
+    <!-- 图像画布 -->
+
+    <canvas width="200" height="150"></canvas>
+
+    <button id="upload" onclick="login()" class="btn btn-info"><i class="icon-play"></i>&nbsp;登录</button>
+
+    <!-- <button id="snap" class="btn btn-success"><i class="icon-camera"></i>&nbsp;拍个照pian</button> -->
+
+    <button onclick="register()" class="btn btn-success"><i class="icon-play"></i>&nbsp;注册新用户</button>
+    <!--<a href="jsp/DT/DT_register.jsp" class="btn btn-success"><i class="icon-user"></i>&nbsp;注册新用户</a>-->
+
+    <!--<a href="servlet/DTAdmin" class="btn btn-warning"><i class="icon-edit"></i>&nbsp;管理人脸库信息</a>-->
+
+    <!--<button onclick="window.history.back(-1)" class="button button-glow button-border button-rounded button-royal"><i class="icon-reply"></i>&nbsp;返回</button><br/>-->
+
+    <span class="hint">1.请将面部置于识别区域主体，单击拍照签到<br/>2.每次有且仅能有一个用户使用人脸登录<br/>3.单击登录后请稍候一些时间，程序会将结果返回出来</span>
+
+</div>
+
+<script>
+
+    function $(elem){
+        return document.querySelector(elem);
+    }
+
+    //获取元素
+    var canvas = $('canvas'),
+        context = canvas.getContext('2d'),
+        video = $('video'),
+        snap = $('#snap'),
+        close = $('#close'),
+        upload = $('#upload'),
+        uploaded = $('#uploaded'),
+        uid = $('#uid'),
+        mediaStreamTrack;
+
+    //打开摄像头
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+
+        navigator.mediaDevices.getUserMedia({
+
+            video: true,
+
+        }).then(function(stream) {
+
+            mediaStreamTrack = typeof stream.stop === 'function' ? stream : stream.getTracks()[1];
+
+//            video.src = (window.URL || window.webkitURL).createObjectURL(stream);
+            video.srcObject = stream;
+            video.play();
+
+        });
+
+    }else if (navigator.getMedia) {
+
+        navigator.getMedia({
+
+            video: true
+
+        }, function(stream) {
+
+            mediaStreamTrack = stream.getTracks()[0];
+
+            var test = (window.URL || window.webkitURL);
+
+            video.src = (window.URL || window.webkitURL).createObjectURL(stream);
+
+            video.play();
+
+        });
+
+    }
+
+    //人脸注册部分
+    function register(){
+        //画出图像
+        context.drawImage(video, 0, 0, 200, 150);
+        //开始通过jQuery传输图片
+        jQuery.post("/register", {                  //指定发送图片到的servlet
+            snapData: canvas.toDataURL('image/jpg'),	//原来这个小括号里是image/png
+            uid: uid.value
+        }).done(function(rs) {
+            //对结果集进行解析，判断是否存在人脸
+            if(rs.indexOf("success") != -1)
+            {
+                alert("成功注册！");
+            }
+            else
+            {
+                alert("注册失败！");
+            }
+        });
+    }
+
+    //人脸登陆
+    function login(){
+        //画出图像
+        context.drawImage(video, 0, 0, 200, 150);
+        //开始通过jQuery传输图片
+        jQuery.post("/login", {                  //指定发送图片到的servlet
+            snapData: canvas.toDataURL('image/jpg')	,	//原来这个小括号里是image/png
+            uid: uid.value
+        }).done(function(rs) {
+            //templates把返回内容解析成html页面，所以判断是否存在success算了
+            if(rs.indexOf("success") != -1)
+            {
+                alert("成功登录！");
+            }
+            else
+            {
+                alert("登陆失败！");
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript" th:src="@{/asserts/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/asserts/js/jquery.min.js}"></script>
+
+</body>
+</html>

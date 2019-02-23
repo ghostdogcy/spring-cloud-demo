@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QRcode</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" th:src="@{/asserts/js/jquery.min.js}" src="jquery.min.js"></script>
+    <script type="text/javascript" th:src="@{/asserts/js/qrcode.js}" src="qrcode.js"></script>
+
+</head>
+<body>
+<h3>由qrcode.jar生成的二维码</h3>
+
+<h4 th:if="${qrcodeName==null}" >请输入内容生成二维码</h4><br/>
+<form th:action="@{/myQRcode}">
+    <input type="text" name="qrData" />
+    <input type="submit" value="生成二维码"/>
+</form>
+<div th:if="${qrcodeName!=null}">
+    <img th:src="@{/asserts/img/}+${qrcodeName}" th:if="${qrcodeName!=null}" />
+</div>
+
+<form th:action="@{/read}" th:if="${qrcodeName!=null}">
+    <input type="submit" value="解析"/>
+</form>
+<input type="text" th:text="${res}" th:if="${res!=null}"/>
+
+
+<script type="text/javascript">
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : 100,
+        height : 100
+    });
+
+    function makeCode () {
+        var elText = document.getElementById("text");
+
+        if (!elText.value) {
+            alert("Input a text");
+            elText.focus();
+            return;
+        }
+
+        qrcode.makeCode(elText.value);
+    }
+
+    makeCode();
+
+    $("#text").
+    on("blur", function () {
+        makeCode();
+    }).
+    on("keydown", function (e) {
+        if (e.keyCode == 13) {
+            makeCode();
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>QRcode</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" th:src="@{/asserts/js/jquery.min.js}" src="jquery.min.js"></script>
+    <script type="text/javascript" th:src="@{/asserts/js/qrcode.js}" src="qrcode.js"></script>
+
+</head>
+<body>
+
+<div th:if="${qrcodeName==null}">
+    <h3>由qrcode.js生成的二维码</h3>
+    <input id="text" type="text" value="http://jindo.dev.naver.com/collie" style="width:80%" /><br />
+    <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+</div>
+
+<div th:if="${qrcodeName!=null}">
+    <h3>由qrcode.jar生成的二维码</h3>
+    <img th:src="@{/asserts/img/timg.jpg}" th:if="${qrcodeName==null}" />
+    <img th:src="@{/asserts/img/}+${qrcodeName}" th:if="${qrcodeName!=null}" />
+</div>
+
+<script type="text/javascript">
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width : 100,
+        height : 100
+    });
+
+    function makeCode () {
+        var elText = document.getElementById("text");
+
+        if (!elText.value) {
+            alert("Input a text");
+            elText.focus();
+            return;
+        }
+
+        qrcode.makeCode(elText.value);
+    }
+
+    makeCode();
+
+    $("#text").
+    on("blur", function () {
+        makeCode();
+    }).
+    on("keydown", function (e) {
+        if (e.keyCode == 13) {
+            makeCode();
+        }
+    });
+</script>
+
+</body>
+</html>
